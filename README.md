@@ -7,6 +7,9 @@
 
  - https://byui-cse.github.io/wdd330-ww-course/week01/team.html
 
+ ### URL of site
+ https://singular-bubblegum-ceb70d.netlify.app/
+
 ### Prerequisites
 
 - You must have Node installed to run the following commands.
