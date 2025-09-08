@@ -1,31 +1,35 @@
 import { getLocalStorage } from "./utils.mjs";
 
 function renderCartContents() {
-  try {
-    const cartItems = getLocalStorage("so-cart") || [];
-    const htmlItems = cartItems.map((item) => cartItemTemplate(item));
-    document.querySelector(".product-list").innerHTML = htmlItems.join("");
-  } catch (error) {
-    document.querySelector(".product-list").innerHTML =
-      "<li>Error loading cart</li>";
+  const cartItems = getLocalStorage("so-cart") || [];
+  const cartList = document.querySelector(".product-list");
+
+  if (!cartList) {
+    return;
   }
+
+  if (cartItems.length === 0) {
+    cartList.innerHTML = '<li class="empty-cart">Your cart is empty</li>';
+    return;
+  }
+
+  const htmlItems = cartItems.map((item) => cartItemTemplate(item));
+  cartList.innerHTML = htmlItems.join("");
 }
 
 function cartItemTemplate(item) {
-  const newItem = `<li class="cart-card divider">
-    <a href="#" class="cart-card__image">
-      <img src="${item.Image}" alt="${item.Name}" />
+  return `<li class="cart-card divider">
+    <a href="../product_pages/index.html?product=${item.Id}" class="cart-card__image">
+      <img src="../${item.Image}" alt="${item.Name}" />
     </a>
-    <a href="#">
+    <a href="../product_pages/index.html?product=${item.Id}">
       <h2 class="card__name">${item.Name}</h2>
     </a>
-    <p class="cart-card__color">${item.Colors ? item.Colors[0].ColorName : "Default Color"}</p>
+    <p class="cart-card__color">${item.Colors?.[0]?.ColorName || "N/A"}</p>
     <p class="cart-card__quantity">qty: ${item.quantity || 1}</p>
     <p class="cart-card__price">$${item.FinalPrice}</p>
   </li>`;
-
-  return newItem;
 }
 
-// Return the contents of the shopping cart when the page loads
+// Initialize cart when the module loads
 renderCartContents();
