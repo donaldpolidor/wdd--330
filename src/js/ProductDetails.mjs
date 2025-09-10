@@ -51,9 +51,9 @@ export default class ProductDetails {
       if (!Array.isArray(cart)) {
         // console.warn("Cart is not an array, converting to array");
         if (cart && typeof cart === "object" && cart !== null) {
-          cart = [cart]; // Convert object to array
+          cart = [cart]; 
         } else {
-          cart = []; // Reset if invalid format
+          cart = []; 
         }
       }
       
@@ -88,32 +88,35 @@ export default class ProductDetails {
     }
   }
 
-  renderProductDetails() {
-    const product = this.product;
-    // console.log("Product details rendering:", product);
+ renderProductDetails() {
+  const product = this.product;
+  
+  try {
+    document.getElementById("product-brand").textContent = product.Brand?.Name || "";
+    document.getElementById("product-name").textContent = product.Name;
+    document.getElementById("product-price").textContent = `$${product.FinalPrice}`;
+    document.getElementById("product-color").textContent = product.Colors?.[0]?.ColorName || "";
+    document.getElementById("product-description").textContent = product.Description;
+
+    let imagePath = product.Image || product.Images?.Primary;
     
-    try {
-      document.getElementById("product-brand").textContent = product.Brand?.Name || "";
-      document.getElementById("product-name").textContent = product.Name;
-      document.getElementById("product-price").textContent = `$${product.FinalPrice}`;
-      document.getElementById("product-color").textContent = product.Colors?.[0]?.ColorName || "";
-      document.getElementById("product-description").textContent = product.Description;
-      
-      // Image path correction
-      const imagePath = product.Image || product.Images?.Primary;
-      if (imagePath) {
-        document.getElementById("product-image").src = `../images/${imagePath}`;
-        document.getElementById("product-image").alt = product.Name;
-      }
-      
-      // Update page title
-      document.title = `Sleep Outside | ${product.Name}`;
-      
-      // console.log("Product details displayed");
-    } catch (error) {
-      // console.error("Error rendering details:", error);
+    if (imagePath && imagePath.startsWith("../")) {
+      imagePath = imagePath.substring(3);
     }
+    
+    if (imagePath && !imagePath.startsWith("/")) {
+      imagePath = "/" + imagePath;
+    }
+
+    document.getElementById("product-image").src = imagePath;
+    document.getElementById("product-image").alt = product.Name;
+    
+    document.title = `Sleep Outside | ${product.Name}`;
+    
+  } catch (error) {
+    console.error("Error rendering details:", error);
   }
+}
 
   showError(message) {
     const productDetailSection = document.querySelector(".product-detail");
