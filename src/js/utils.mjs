@@ -49,12 +49,11 @@ export function getLocalStorage(key) {
   }
 }
 
-// Ajoutez cette fonction à utils.mjs
 export function updateCartCount() {
   const cart = getLocalStorage("so-cart") || [];
   const totalItems = cart.reduce((total, item) => total + (item.quantity || 1), 0);
   
-  // Mettre à jour le compteur dans l'UI
+  // Update the counter in the UI
   const cartCounter = document.querySelector(".cart-count");
   if (cartCounter) {
     cartCounter.textContent = totalItems;
@@ -91,7 +90,7 @@ export function addProductToCart(product) {
   
   if (success) {
     console.log("Cart updated successfully");
-    updateCartCount(); // Update the cart counter in UI
+    updateCartCount(); 
   } else {
     console.error("Failed to update cart");
   }

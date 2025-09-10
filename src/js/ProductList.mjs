@@ -1,15 +1,22 @@
 import { renderListWithTemplate } from "./utils.mjs";
 
 function productCardTemplate(product) {
-  // Correction du chemin d'image
   let imagePath = product.Image;
-  if (imagePath && imagePath.startsWith("../")) {
-    imagePath = imagePath.substring(3);
+  
+  // Path normalization
+  if (imagePath) {
+    if (imagePath.startsWith("/")) {
+      imagePath = imagePath.substring(1);
+    }
+    if (!imagePath.startsWith("images/")) {
+      imagePath = "images/" + imagePath;
+    }
+    imagePath = "/" + imagePath;
   }
   
   return `<li class="product-card">
     <a href="product_pages/index.html?product=${product.Id}">
-      <img src="${imagePath}" alt="Image of ${product.Name}">
+      <img src="${imagePath}" alt="Image of ${product.Name}" onerror="console.error('Image failed to load:', this.src)">
       <h3 class="card__brand">${product.Brand?.Name || ""}</h3>
       <h2 class="card__name">${product.Name}</h2>
       <p class="product-card__price">$${product.FinalPrice}</p>
@@ -30,11 +37,11 @@ export default class ProductList {
   }
 
   renderList(list) {
-    // Afficher TOUS les produits au lieu d'une sélection
+    // Display all products instead of a selection
     renderListWithTemplate(
       productCardTemplate, 
       this.listElement, 
-      list,  // ← Utilisez la liste complète
+      list, 
       "afterbegin", 
       true
     );
