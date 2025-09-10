@@ -1,4 +1,16 @@
-import { addProductToCart, updateCartCount } from "./utils.mjs";
+import { updateCartCount, addProductToCart } from "./utils.mjs";
+import ProductData from "./ProductData.mjs";
+import ProductList from "./ProductList.mjs";
+
+// Initialize product data
+const dataSource = new ProductData("tents");
+
+// Initialize product list if on homepage
+if (document.querySelector(".product-list")) {
+  const listElement = document.querySelector(".product-list");
+  const productList = new ProductList("tents", dataSource, listElement);
+  productList.init();
+}
 
 // Initialize the basket counter when the page loads
 document.addEventListener("DOMContentLoaded", function () {
@@ -6,17 +18,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Add event listeners to the Add to Cart button
   document.addEventListener("click", function (e) {
-    // Search by ID only
     if (e.target.id === "addToCart" || e.target.closest("#addToCart")) {
       e.preventDefault();
 
       const button =
         e.target.id === "addToCart" ? e.target : e.target.closest("#addToCart");
-      const productIdFromButton = button.dataset.id; // Changed the name of the variable
+      const productIdFromButton = button.dataset.id;
 
       if (productIdFromButton) {
-        // use the new name
-        // retrieve product data from the HTML page
         const productName =
           document.querySelector("h2")?.textContent ||
           "Product " + productIdFromButton;
@@ -30,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
           document.querySelector(".product__color")?.textContent || "Default";
 
         const productData = {
-          Id: productIdFromButton, // use the new name
+          Id: productIdFromButton,
           Name: productName,
           Image: productImage,
           FinalPrice: productPrice,

@@ -18,9 +18,20 @@ function renderCartContents() {
 }
 
 function cartItemTemplate(item) {
+  let imagePath = item.Image || item.Images?.Primary;
+
+  // Correction du chemin d'image
+  if (imagePath && imagePath.startsWith("../")) {
+    imagePath = imagePath.substring(3);
+  }
+
+  if (imagePath && !imagePath.startsWith("/")) {
+    imagePath = "/" + imagePath;
+  }
+
   return `<li class="cart-card divider">
     <a href="../product_pages/index.html?product=${item.Id}" class="cart-card__image">
-      <img src="../${item.Image}" alt="${item.Name}" />
+      <img src="${imagePath}" alt="${item.Name}" onerror="this.src='/images/placeholder.jpg'" />
     </a>
     <a href="../product_pages/index.html?product=${item.Id}">
       <h2 class="card__name">${item.Name}</h2>
