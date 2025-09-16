@@ -1,5 +1,8 @@
-import { getParam, setLocalStorage, getLocalStorage } from "./utils.mjs";
+import { getParam, setLocalStorage, getLocalStorage, loadHeaderFooter } from "./utils.mjs";
 import ProductData from "./ProductData.mjs";
+
+// Charger header et footer
+loadHeaderFooter();
 
 export default class ProductDetails {
   constructor(productIdValue, dataSource) {
@@ -88,7 +91,7 @@ export default class ProductDetails {
     }
   }
 
- renderProductDetails() {
+renderProductDetails() {
   const product = this.product;
   
   try {
@@ -100,11 +103,15 @@ export default class ProductDetails {
 
     let imagePath = product.Image || product.Images?.Primary;
     
-    if (imagePath && imagePath.startsWith("../")) {
-      imagePath = imagePath.substring(3);
-    }
-    
-    if (imagePath && !imagePath.startsWith("/")) {
+    // Correction du chemin d'image
+    if (imagePath) {
+      if (imagePath.includes("../")) {
+        imagePath = imagePath.replace("../", "");
+      }
+      if (!imagePath.startsWith("images/")) {
+        imagePath = "images/" + imagePath;
+      }
+      // Chemin absolu depuis la racine
       imagePath = "/" + imagePath;
     }
 

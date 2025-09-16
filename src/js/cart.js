@@ -1,4 +1,7 @@
-import { getLocalStorage } from "./utils.mjs";
+import { getLocalStorage, loadHeaderFooter } from "./utils.mjs";
+
+// load header and footer
+loadHeaderFooter();
 
 function renderCartContents() {
   const cartItems = getLocalStorage("so-cart") || [];
@@ -9,7 +12,7 @@ function renderCartContents() {
   }
 
   if (cartItems.length === 0) {
-    cartList.innerHTML = '<li class="empty-cart">Your cart is empty</li>';
+    cartList.innerHTML = "<li class=\"empty-cart\">Your cart is empty</li>";
     return;
   }
 
@@ -22,8 +25,8 @@ function cartItemTemplate(item) {
   
   // Path normalization
   if (imagePath) {
-    if (imagePath.startsWith("/")) {
-      imagePath = imagePath.substring(1);
+    if (imagePath.includes("../")) {
+      imagePath = imagePath.replace("../", "");
     }
     if (!imagePath.startsWith("images/")) {
       imagePath = "images/" + imagePath;
@@ -32,10 +35,10 @@ function cartItemTemplate(item) {
   }
   
   return `<li class="cart-card divider">
-    <a href="../product_pages/index.html?product=${item.Id}" class="cart-card__image">
-      <img src="${imagePath}" alt="${item.Name}" onerror="console.error('Image failed to load:', this.src)">
+    <a href="/product_pages/index.html?product=${item.Id}" class="cart-card__image">
+      <img src="${imagePath}" alt="${item.Name}">
     </a>
-    <a href="../product_pages/index.html?product=${item.Id}">
+    <a href="/product_pages/index.html?product=${item.Id}">
       <h2 class="card__name">${item.Name}</h2>
     </a>
     <p class="cart-card__color">${item.Colors?.[0]?.ColorName || "N/A"}</p>
