@@ -105,3 +105,48 @@ export function renderListWithTemplate(templateFn, parentElement, list, position
   const htmlStrings = list.map(templateFn);
   parentElement.insertAdjacentHTML(position, htmlStrings.join(""));
 }
+
+// Function to load a template
+export async function loadTemplate(path) {
+  try {
+    const res = await fetch(path);
+    if (!res.ok) {
+      throw new Error(`Failed to load template: ${path}`);
+    }
+    return await res.text();
+  } catch (error) {
+    console.error("Error loading template:", error);
+    return "";
+  }
+}
+
+// Function to return a template
+export function renderWithTemplate(template, parentElement, data, callback) {
+  if (parentElement) {
+    parentElement.innerHTML = template;
+    if (callback) {
+      callback(data);
+    }
+  }
+}
+
+// Function to load header and footer
+export async function loadHeaderFooter() {
+  try {
+    // load the header
+    const headerTemplate = await loadTemplate("/partials/header.html");
+    const headerElement = document.querySelector("#main-header");
+    renderWithTemplate(headerTemplate, headerElement, null, () => {
+      // Callback to update the shopping cart counter
+      updateCartCount();
+    });
+
+    // load the footer
+    const footerTemplate = await loadTemplate("/partials/footer.html");
+    const footerElement = document.querySelector("#main-footer");
+    renderWithTemplate(footerTemplate, footerElement);
+    
+  } catch (error) {
+    console.error("Error loading header/footer:", error);
+  }
+}
