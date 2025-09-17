@@ -21,22 +21,20 @@ function renderCartContents() {
 }
 
 function cartItemTemplate(item) {
-  let imagePath = item.Image || item.Images?.Primary;
+  // CORRECTING IMAGES IN THE SHOPPING CART
+  let imagePath = item.Image;
   
-  // Path normalization
-  if (imagePath) {
-    if (imagePath.includes("../")) {
-      imagePath = imagePath.replace("../", "");
-    }
-    if (!imagePath.startsWith("images/")) {
-      imagePath = "images/" + imagePath;
-    }
+  if (!imagePath || imagePath === "undefined" || imagePath === "null") {
+    imagePath = "/images/placeholder.jpg";
+  }
+  
+  if (imagePath && !imagePath.startsWith("/") && !imagePath.startsWith("http")) {
     imagePath = "/" + imagePath;
   }
   
   return `<li class="cart-card divider">
     <a href="/product_pages/index.html?product=${item.Id}" class="cart-card__image">
-      <img src="${imagePath}" alt="${item.Name}">
+      <img src="${imagePath}" alt="${item.Name}" onerror="this.src='/images/placeholder.jpg'">
     </a>
     <a href="/product_pages/index.html?product=${item.Id}">
       <h2 class="card__name">${item.Name}</h2>
