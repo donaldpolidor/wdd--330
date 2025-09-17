@@ -1,10 +1,8 @@
-export function getParam(param) {
+export function getParam(param, defaultValue = null) {
   const queryString = window.location.search;
-  console.log("Query string:", queryString);
   const urlParams = new URLSearchParams(queryString);
   const value = urlParams.get(param);
-  console.log(`Parameter ${param}:`, value);
-  return value;
+  return value !== null ? value : defaultValue;
 }
 
 export function setLocalStorage(key, data) {
