@@ -1,129 +1,115 @@
-import { getParam, setLocalStorage, getLocalStorage, loadHeaderFooter } from "./utils.mjs";
+import { getParam, setLocalStorage, getLocalStorage } from "./utils.mjs";
 import ProductData from "./ProductData.mjs";
 
-// Charger header et footer
-loadHeaderFooter();
-
 export default class ProductDetails {
-  constructor(productIdValue, dataSource) {
-    this.productId = productIdValue; 
+  constructor(productId, dataSource) {
+    this.productId = productId;
     this.dataSource = dataSource;
+    this.product = null;
+    this.addButtonClicked = false;
   }
 
   async init() {
     try {
-      // console.log("Loading product with ID:", this.productId);
-      
       this.product = await this.dataSource.findProductById(this.productId);
-      // console.log("Product loaded:", this.product);
       
       if (!this.product) {
-        // console.error("Product not found with ID:", this.productId);
         this.showError("Product not found");
         return;
       }
       
       this.renderProductDetails();
-      
-      // Check that the button exists
-      const addButton = document.getElementById("addToCart");
-      if (addButton) {
-        addButton.addEventListener("click", this.addToCart.bind(this));
-        // console.log("Event listener attached to the button");
-      } else {
-        // console.error("\"Add to Cart\" button not found!");
-      }
+      this.addToCartListener();
     } catch (error) {
-      // console.error("Error loading product:", error);
-      this.showError("Product loading error");
+      console.error("Error while loading:", error);
+      this.showError("Error loading product");
     }
   }
 
-  addToCart() {
-    // console.log("Click on \"Add to Cart\"");
-    // console.log("Product to add:", this.product);
+  renderProductDetails() {
+    const product = this.product;
     
-    try {
-      // Retrieve the current basket or initialize an empty array
-      let cart = getLocalStorage("so-cart") || [];
-      // console.log("Current cart:", cart);
-      // console.log("Cart type:", typeof cart);
-      // console.log("Is array:", Array.isArray(cart));
-      
-      // Ensure cart is always an array
-      if (!Array.isArray(cart)) {
-        // console.warn("Cart is not an array, converting to array");
-        if (cart && typeof cart === "object" && cart !== null) {
-          cart = [cart]; 
-        } else {
-          cart = []; 
-        }
-      }
-      
-      // Check if the product is already in the cart
-      const existingItemIndex = cart.findIndex(item => item.Id === this.product.Id);
-      
-      if (existingItemIndex >= 0) {
-        // Product already in cart, increase quantity
-        cart[existingItemIndex].quantity = (cart[existingItemIndex].quantity || 1) + 1;
-        // console.log("Increased quantity");
-      } else {
-        // New product, add with quantity 1
-        const productToAdd = {...this.product, quantity: 1};
-        cart.push(productToAdd);
-        // console.log("New product added");
-      }
-      
-      // Save updated shopping cart
-      const success = setLocalStorage("so-cart", cart);
-      
-      if (success) {
-        // console.log("Basket successfully saved");
-        alert(`${this.product.Name} has been added to your cart!`);
-      } else {
-        // console.error("Error saving shopping cart");
-        alert("Error adding to cart!");
-      }
-    } catch (error) {
-      // console.error("Error in addToCart:", error);
-      // console.error("Error details:", error.message);
-      alert("Technical error when adding to cart. Check console for details.");
-    }
-  }
-
-renderProductDetails() {
-  const product = this.product;
-  
-  try {
+    const imagePath = product.Images?.PrimaryLarge || 
+                     product.Images?.PrimaryMedium || 
+                     product.Images?.Primary ||
+                     "/images/placeholder.jpg";
+    
     document.getElementById("product-brand").textContent = product.Brand?.Name || "";
     document.getElementById("product-name").textContent = product.Name;
     document.getElementById("product-price").textContent = `$${product.FinalPrice}`;
     document.getElementById("product-color").textContent = product.Colors?.[0]?.ColorName || "";
     document.getElementById("product-description").textContent = product.Description;
 
-    let imagePath = product.Image || product.Images?.Primary;
-    
-    // Correction du chemin d'image
-    if (imagePath) {
-      if (imagePath.includes("../")) {
-        imagePath = imagePath.replace("../", "");
-      }
-      if (!imagePath.startsWith("images/")) {
-        imagePath = "images/" + imagePath;
-      }
-      // Chemin absolu depuis la racine
-      imagePath = "/" + imagePath;
-    }
-
     document.getElementById("product-image").src = imagePath;
     document.getElementById("product-image").alt = product.Name;
     
     document.title = `Sleep Outside | ${product.Name}`;
-    
-  } catch (error) {
-    console.error("Error rendering details:", error);
   }
-}
+
+  addToCartListener() {
+    const addButton = document.getElementById("addToCart");
+    if (addButton) {
+      // DELETE ALL OLD HEADPHONES
+      const newButton = addButton.cloneNode(true);
+      addButton.parentNode.replaceChild(newButton, addButton);
+      
+      // ADD A SINGLE CLEAN EARPHONE
+      newButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        
+        // PREVENT DOUBLE CLICKS
+        if (this.addButtonClicked) return;
+        this.addButtonClicked = true;
+        
+        // DISABLE THE BUTTON FOR 2 SECONDS
+        newButton.disabled = true;
+        newButton.textContent = "Adding...";
+        
+        this.addToCart();
+        
+        // REACTIVATE AFTER 2 SECONDS
+        setTimeout(() => {
+          this.addButtonClicked = false;
+          newButton.disabled = false;
+          newButton.textContent = "Add to Cart";
+        }, 2000);
+      });
+    }
+  }
+
+  addToCart() {
+    let cart = getLocalStorage("so-cart") || [];
+    
+    const imagePath = this.product.Images?.PrimaryMedium || 
+                     this.product.Images?.Primary ||
+                     "/images/placeholder.jpg";
+
+    const productToAdd = {
+      Id: this.product.Id,
+      Name: this.product.Name,
+      Image: imagePath,
+      FinalPrice: this.product.FinalPrice,
+      Colors: this.product.Colors || [{ ColorName: "N/A" }],
+      quantity: 1
+    };
+    
+    const existingItemIndex = cart.findIndex(item => item.Id === productToAdd.Id);
+    
+    if (existingItemIndex >= 0) {
+      cart[existingItemIndex].quantity += 1;
+    } else {
+      cart.push(productToAdd);
+    }
+    
+    setLocalStorage("so-cart", cart);
+    
+    // SINGLE ALERT - no duplicate messages
+    alert(`${this.product.Name} has been added to your cart!`);
+    
+    const event = new CustomEvent('cartUpdated');
+    document.dispatchEvent(event);
+  }
 
   showError(message) {
     const productDetailSection = document.querySelector(".product-detail");
@@ -137,19 +123,4 @@ renderProductDetails() {
       `;
     }
   }
-}
-
-// Initialize the product details page
-// console.log("Initializing the product page");
-const productId = getParam("product");
-// console.log("Product ID from URL:", productId);
-
-if (productId) {
-  const dataSource = new ProductData("tents");
-  const product = new ProductDetails(productId, dataSource);
-  product.init();
-} else {
-  // console.error("No product ID found in the URL");
-  const product = new ProductDetails();
-  product.showError("Product not specified in the URL");
 }

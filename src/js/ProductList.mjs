@@ -1,23 +1,12 @@
 import { renderListWithTemplate } from "./utils.mjs";
 
 function productCardTemplate(product) {
-  let imagePath = product.Image || product.Images?.Primary;
-  
-  // Correction du chemin d'image pour le build
-  if (imagePath) {
-    // Nettoyer le chemin
-    if (imagePath.includes("../")) {
-      imagePath = imagePath.replace("../", "");
-    }
-    // S'assurer que le chemin est correct
-    if (!imagePath.startsWith("images/")) {
-      imagePath = "images/" + imagePath;
-    }
-  }
+  // Use PrimaryMedium for list images
+  const imagePath = product.Images?.PrimaryMedium || product.Images?.Primary;
   
   return `<li class="product-card">
     <a href="/product_pages/index.html?product=${product.Id}">
-      <img src="/${imagePath}" alt="Image of ${product.Name}">
+      <img src="${imagePath}" alt="Image of ${product.Name}">
       <h3 class="card__brand">${product.Brand?.Name || ""}</h3>
       <h2 class="card__name">${product.Name}</h2>
       <p class="product-card__price">$${product.FinalPrice}</p>
@@ -33,12 +22,14 @@ export default class ProductList {
   }
 
   async init() {
-    const list = await this.dataSource.getData();
+    const list = await this.dataSource.getData(this.category);
     this.renderList(list);
+    
+    // Update the page title
+    this.updatePageTitle();
   }
 
   renderList(list) {
-    // Display all products instead of a selection
     renderListWithTemplate(
       productCardTemplate, 
       this.listElement, 
@@ -46,5 +37,16 @@ export default class ProductList {
       "afterbegin", 
       true
     );
+  }
+
+  updatePageTitle() {
+    const categoryTitle = this.category.charAt(0).toUpperCase() + this.category.slice(1);
+    document.title = `Sleep Outside | ${categoryTitle}`;
+    
+    // Update the H1 title if it exists
+    const pageTitle = document.querySelector("h1");
+    if (pageTitle) {
+      pageTitle.textContent = `Top Products: ${categoryTitle}`;
+    }
   }
 }

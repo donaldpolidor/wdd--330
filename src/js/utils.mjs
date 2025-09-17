@@ -51,13 +51,15 @@ export function updateCartCount() {
   const cart = getLocalStorage("so-cart") || [];
   const totalItems = cart.reduce((total, item) => total + (item.quantity || 1), 0);
   
-  // Update the counter in the UI
   const cartCounter = document.querySelector(".cart-count");
   if (cartCounter) {
     cartCounter.textContent = totalItems;
     cartCounter.style.display = totalItems > 0 ? "block" : "none";
   }
 }
+
+// Listen to the basket update event
+document.addEventListener('cartUpdated', updateCartCount);
 
 export function addProductToCart(product) {
   console.log("Adding product to cart:", product);

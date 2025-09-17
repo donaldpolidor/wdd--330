@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sleep Outside | Product Details</title>
     <link rel="stylesheet" href="../css/style.css" />
-    <script src="../js/ProductDetails.mjs" type="module"></script>
   </head>
 
   <body>
     <header class="divider" id="main-header">
-  <!-- The header will be loaded dynamically. -->
-</header>
+      <!-- The header will be loaded dynamically. -->
+    </header>
 
     <main class="divider">
       <section class="product-detail">
@@ -31,7 +30,31 @@
     </main>
 
     <footer id="main-footer">
-    <!-- The footer will be loaded dynamically. -->
+      <!-- The footer will be loaded dynamically. -->
     </footer>
+
+    <script type="module">
+      import { getParam, loadHeaderFooter } from '../js/utils.mjs';
+      import ProductData from '../js/ProductData.mjs';
+      import ProductDetails from '../js/ProductDetails.mjs';
+
+      //WAIT UNTIL HEADER AND FOOTER ARE LOADED
+      await loadHeaderFooter();
+      
+      const productId = getParam("product");
+      if (productId) {
+        const dataSource = new ProductData();
+        const productPage = new ProductDetails(productId, dataSource);
+        productPage.init();
+      } else {
+        document.querySelector(".product-detail").innerHTML = `
+          <div class="error">
+            <h2>Error</h2>
+            <p>Product not specified</p>
+            <a href="../index.html">Back to home page</a>
+          </div>
+        `;
+      }
+    </script>
   </body>
 </html>

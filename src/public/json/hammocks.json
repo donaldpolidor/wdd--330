@@ -1,0 +1,36 @@
+[
+  {
+    "Id": "HAM001",
+    "Name": "Premium Camping Hammock",
+    "Brand": {
+      "Name": "Outdoor Adventure"
+    },
+    "FinalPrice": 59.99,
+    "Images": {
+      "Primary": "images/hammocks/premium-hammock.jpg"
+    },
+    "Colors": [
+      {
+        "ColorName": "Forest Green"
+      }
+    ],
+    "Description": "Comfortable and durable hammock for outdoor relaxation."
+  },
+  {
+    "Id": "HAM002", 
+    "Name": "Double Parachute Hammock",
+    "Brand": {
+      "Name": "Sky Comfort"
+    },
+    "FinalPrice": 79.99,
+    "Images": {
+      "Primary": "images/hammocks/double-hammock.jpg"
+    },
+    "Colors": [
+      {
+        "ColorName": "Blue Sky"
+      }
+    ],
+    "Description": "Spacious hammock for two people, made from parachute material."
+  }
+]

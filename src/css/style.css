@@ -313,7 +313,7 @@ button {
   line-height: 1.3;
 }
 
-/* Responsive design amélioré */
+/* Improved responsive design */
 @media (max-width: 900px) {
   .categories {
     padding: 1.2rem;
