@@ -46,6 +46,8 @@ export default defineConfig({
       "**/*.svg",
       "**/*.webp",
       "**/*.jpeg",
+      "**/*.gif",
+      "**/*.ico"
     ],
     rollupOptions: {
       input: {
@@ -53,9 +55,13 @@ export default defineConfig({
         cart: resolve(__dirname, "src/cart/index.html"),
         checkout: resolve(__dirname, "src/checkout/index.html"),
         product: resolve(__dirname, "src/product_pages/index.html"),
+        product_listing: resolve(__dirname, "src/product_listing/index.html"),
+        // AJOUTEZ TOUTES VOS NOUVELLES PAGES ICI :
+        // about: resolve(__dirname, "src/about/index.html"),
+        // contact: resolve(__dirname, "src/contact/index.html"),
+        // Ajoutez d'autres pages au besoin
       },
     },
-
     async writeBundle() {
       copyImages();
     },
@@ -65,4 +71,9 @@ export default defineConfig({
     port: 5173,
     open: true,
   },
+  // Optimisation pour le déploiement
+  preview: {
+    port: 4173,
+    open: true
+  }
 });

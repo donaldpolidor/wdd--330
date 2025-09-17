@@ -9,7 +9,10 @@ function convertToJson(res) {
 export default class ProductData {
   constructor(category) {
     this.category = category;
-    this.path = `/json/${this.category}.json`;  }
+    // Utilisez la variable d'environnement pour l'URL de base
+    this.basePath = import.meta.env.VITE_SERVER_URL;
+    this.path = `${this.basePath}api/products/${this.category}`;
+  }
   
   getData() {
     return fetch(this.path)
