@@ -1,29 +1,111 @@
 <!doctype html>
-
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>Sleep Outside | Checkout</title>
-
-    <link rel="stylesheet" href="css/style.css" />
+    <title>SleepOutside | Checkout</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <script src="../js/checkout.js" type="module"></script>
   </head>
 
   <body>
     <header class="divider" id="main-header">
-  <!-- The header will be loaded dynamically. -->
-</header>
+      <!-- The header will be loaded dynamically. -->
+    </header>
 
     <main class="divider">
-      <section class="products">
-        <h2>Review & Place your Order</h2>
-      </section>
+      <h1>Finalize Order</h1>
+      
+      <div class="checkout-layout">
+        <!-- Payment form -->
+        <section class="checkout-form">
+          <h2>Payment Information</h2>
+          <form id="checkout-form" novalidate>
+            <!-- Personal information -->
+            <fieldset>
+              <legend>Personal information</legend>
+              <div class="form-group">
+                <label for="fname">First name *</label>
+                <input type="text" id="fname" name="fname" required>
+              </div>
+              <div class="form-group">
+                <label for="lname">Name *</label>
+                <input type="text" id="lname" name="lname" required>
+              </div>
+            </fieldset>
+
+            <!-- Address -->
+            <fieldset>
+              <legend>Delivery Address</legend>
+              <div class="form-group">
+                <label for="street">Address *</label>
+                <input type="text" id="street" name="street" required>
+              </div>
+              <div class="form-group">
+                <label for="city">City *</label>
+                <input type="text" id="city" name="city" required>
+              </div>
+              <div class="form-group">
+                <label for="state">State *</label>
+                <input type="text" id="state" name="state" required>
+              </div>
+              <div class="form-group">
+                <label for="zip">Postal Code *</label>
+                <input type="text" id="zip" name="zip" required>
+              </div>
+            </fieldset>
+
+            <!-- Payment -->
+            <fieldset>
+              <legend>Payment Information</legend>
+              <div class="form-group">
+                <label for="cardNumber">Credit Card Number *</label>
+                <input type="text" id="cardNumber" name="cardNumber" pattern="[0-9]{16}" required>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="expiration">Exp. Date *</label>
+                  <input type="text" id="expiration" name="expiration" placeholder="MM/AA" required>
+                </div>
+                <div class="form-group">
+                  <label for="code">Security Code *</label>
+                  <input type="text" id="code" name="code" pattern="[0-9]{3}" required>
+                </div>
+              </div>
+            </fieldset>
+
+            <button type="submit" class="btn-primary">Payment</button>
+          </form>
+        </section>
+
+        <!-- Order summary -->
+        <section class="order-summary">
+          <h2>Order summary</h2>
+          <div id="cart-items"></div>
+          <div class="order-totals">
+            <div class="total-line">
+              <span>Subtotal:</span>
+              <span id="item-total">$0.00</span>
+            </div>
+            <div class="total-line">
+              <span>Taxes (6%):</span>
+              <span id="tax">$0.00</span>
+            </div>
+            <div class="total-line">
+              <span>Shipping Costs:</span>
+              <span id="shipping">$0.00</span>
+            </div>
+            <div class="total-line grand-total">
+              <span>Total:</span>
+              <span id="order-total">$0.00</span>
+            </div>
+          </div>
+        </section>
+      </div>
     </main>
 
     <footer id="main-footer">
-  <!-- Le footer sera chargé dynamiquement -->
-</footer>
+      <!-- The footer will be loaded dynamically. -->
+    </footer>
   </body>
 </html>
