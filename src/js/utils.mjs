@@ -7,9 +7,7 @@ export function getParam(param, defaultValue = null) {
 
 export function setLocalStorage(key, data) {
   try {
-    console.log("Saving to localStorage:", key, data);
     localStorage.setItem(key, JSON.stringify(data));
-    console.log("Data saved successfully");
     return true;
   } catch (error) {
     console.error("Error saving to localStorage:", error);
@@ -19,28 +17,13 @@ export function setLocalStorage(key, data) {
 
 export function getLocalStorage(key) {
   try {
-    console.log("Reading from localStorage:", key);
     const item = localStorage.getItem(key);
-    console.log("Raw data:", item);
-    
-    if (!item) {
-      console.log("No data found, returning empty array");
-      return [];
-    }
+    if (!item) return [];
     
     const data = JSON.parse(item);
-    console.log("Parsed data:", data);
-    
-    // Ensure we always return an array
-    if (Array.isArray(data)) {
-      return data;
-    } else if (typeof data === "object" && data !== null) {
-      console.log("Converting object to array");
-      return [data];
-    } else {
-      console.warn("Unexpected data format, returning empty array");
-      return [];
-    }
+    if (Array.isArray(data)) return data;
+    if (typeof data === "object" && data !== null) return [data];
+    return [];
   } catch (error) {
     console.error("Error reading from localStorage:", error);
     return [];
@@ -62,13 +45,10 @@ export function updateCartCount() {
 document.addEventListener('cartUpdated', updateCartCount);
 
 export function addProductToCart(product) {
-  console.log("Adding product to cart:", product);
-  
   let cart = getLocalStorage("so-cart") || [];
   
   // Ensure cart is always an array
   if (!Array.isArray(cart)) {
-    console.warn("Cart is not an array, resetting it");
     cart = [];
   }
   
@@ -77,22 +57,17 @@ export function addProductToCart(product) {
   if (existingItemIndex >= 0) {
     // Product already in cart, increase quantity
     cart[existingItemIndex].quantity = (cart[existingItemIndex].quantity || 1) + 1;
-    console.log("Quantity increased for existing product");
   } else {
     // New product, add with quantity 1
     const productToAdd = {...product, quantity: 1};
     cart.push(productToAdd);
-    console.log("New product added to cart");
   }
   
   // Save updated cart
   const success = setLocalStorage("so-cart", cart);
   
   if (success) {
-    console.log("Cart updated successfully");
-    updateCartCount(); 
-  } else {
-    console.error("Failed to update cart");
+    updateCartCount();
   }
   
   return success;
@@ -136,17 +111,60 @@ export async function loadHeaderFooter() {
     // load the header
     const headerTemplate = await loadTemplate("/partials/header.html");
     const headerElement = document.querySelector("#main-header");
-    renderWithTemplate(headerTemplate, headerElement, null, () => {
-      // Callback to update the shopping cart counter
-      updateCartCount();
-    });
+    if (headerElement) {
+      renderWithTemplate(headerTemplate, headerElement, null, () => {
+        // Callback to update the shopping cart counter
+        updateCartCount();
+      });
+    }
 
     // load the footer
     const footerTemplate = await loadTemplate("/partials/footer.html");
     const footerElement = document.querySelector("#main-footer");
-    renderWithTemplate(footerTemplate, footerElement);
+    if (footerElement) {
+      renderWithTemplate(footerTemplate, footerElement);
+    }
     
   } catch (error) {
     console.error("Error loading header/footer:", error);
   }
+}
+
+// NEW ALERT MESSAGE FUNCTION - Corrected version
+export function alertMessage(message, scroll = true) {
+  // Create alert element
+  const alert = document.createElement('div');
+  alert.className = 'alert-message';
+  alert.innerHTML = `
+    <span class="alert-text">${message}</span>
+    <button class="alert-close">&times;</button>
+  `;
+
+  // Add to the top of main
+  const main = document.querySelector('main');
+  if (main) {
+    main.insertBefore(alert, main.firstChild);
+    
+    // Scroll to top if requested
+    if (scroll) {
+      window.scrollTo(0, 0);
+    }
+  }
+
+  // Close alert when X is clicked
+  const closeBtn = alert.querySelector('.alert-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      if (alert.parentNode) {
+        alert.remove();
+      }
+    });
+  }
+
+  // Auto-remove after 5 seconds
+  setTimeout(() => {
+    if (alert.parentNode) {
+      alert.remove();
+    }
+  }, 5000);
 }

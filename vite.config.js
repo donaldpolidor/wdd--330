@@ -11,7 +11,6 @@ function copyImages() {
     mkdirSync(destDir, { recursive: true });
   }
 
-  // Recursive copy of all image files
   function copyRecursive(src, dest) {
     if (existsSync(src)) {
       const items = readdirSync(src, { withFileTypes: true });
@@ -39,7 +38,6 @@ export default defineConfig({
   root: "src",
   build: {
     outDir: "../dist",
-    // Configuration to include all assets
     assetsInclude: [
       "**/*.jpg",
       "**/*.png",
@@ -54,12 +52,9 @@ export default defineConfig({
         main: resolve(__dirname, "src/index.html"),
         cart: resolve(__dirname, "src/cart/index.html"),
         checkout: resolve(__dirname, "src/checkout/index.html"),
+        success: resolve(__dirname, "src/checkout/success.html"),
         product: resolve(__dirname, "src/product_pages/index.html"),
         product_listing: resolve(__dirname, "src/product_listing/index.html"),
-        // AJOUTEZ TOUTES VOS NOUVELLES PAGES ICI :
-        // about: resolve(__dirname, "src/about/index.html"),
-        // contact: resolve(__dirname, "src/contact/index.html"),
-        // Ajoutez d'autres pages au besoin
       },
     },
     async writeBundle() {
@@ -71,7 +66,6 @@ export default defineConfig({
     port: 5173,
     open: true,
   },
-  // Optimisation pour le déploiement
   preview: {
     port: 4173,
     open: true
