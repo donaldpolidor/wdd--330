@@ -1,52 +1,92 @@
 import CheckoutProcess from './CheckoutProcess.mjs';
-import { loadHeaderFooter } from './utils.mjs';
+import { loadHeaderFooter, alertMessage } from './utils.mjs';
 
-// Load header and footer
 loadHeaderFooter();
-
-// Simple initialization
-console.log('🚀 Initializing checkout...');
 
 const checkout = new CheckoutProcess('so-cart', '.order-totals');
 checkout.init();
 
-// Recalculate totals when zip code changes
-const zipInput = document.getElementById('zip');
-if (zipInput) {
-  zipInput.addEventListener('input', () => {
-    checkout.calculateOrderTotal();
-  });
+document.getElementById('zip')?.addEventListener('input', () => {
+  checkout.calculateOrderTotal();
+});
+
+// Simple validation of payment fields
+function validatePaymentFields() {
+  const cardNumber = document.getElementById('cardNumber').value;
+  const expiration = document.getElementById('expiration').value;
+  const securityCode = document.getElementById('code').value;
+
+  // Validate card number (1234123412341234)
+  if (!/^\d{16}$/.test(cardNumber.replace(/\s/g, ''))) {
+    alertMessage('Credit card number must be 16 digits', true);
+    return false;
+  }
+
+  // Validate expiration date (MM/YY format and future/current date)
+  if (!/^\d{2}\/\d{2}$/.test(expiration)) {
+    alertMessage('Expiration date must be in MM/YY format', true);
+    return false;
+  }
+
+  const [month, year] = expiration.split('/');
+  const expDate = new Date(2000 + parseInt(year), parseInt(month) - 1);
+  const currentDate = new Date();
+  
+  if (expDate < currentDate) {
+    alertMessage('Expiration date must be in the future or current month', true);
+    return false;
+  }
+
+  // Validate security code - ONLY “123” IS ACCEPTED
+  if (securityCode !== '123') {
+    alertMessage('Invalid password', true);
+    return false;
+  }
+
+  return true;
 }
 
-// Handle form submission
-const checkoutForm = document.getElementById('checkout-form');
-if (checkoutForm) {
-  checkoutForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+document.getElementById('checkout-form')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const form = e.target;
+  
+  // Basic HTML validation
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+
+  // Payment field validation
+  if (!validatePaymentFields()) {
+    return;
+  }
+
+  if (checkout.list.length === 0) {
+    alertMessage('Your cart is empty', true);
+    return;
+  }
+
+  const button = form.querySelector('button[type="submit"]');
+  button.disabled = true;
+  button.textContent = 'Processing...';
+
+  try {
+    const result = await checkout.checkout(form);
     
-    if (!checkoutForm.checkValidity()) {
-      alert('Please fill in all required fields correctly.');
-      return;
-    }
-
-    if (checkout.list.length === 0) {
-      alert('Your cart is empty. Please add items before proceeding to checkout.');
-      return;
-    }
-
-    const submitButton = checkoutForm.querySelector('button[type="submit"]');
-    submitButton.disabled = true;
-    submitButton.textContent = 'Processing...';
-
-    try {
-      const result = await checkout.checkout(checkoutForm);
-      alert(`Order successfully placed! Order number: ${result.orderId}`);
-      localStorage.removeItem('so-cart');
-      window.location.href = '../index.html';
-    } catch (error) {
-      alert('Error processing the order. Please try again..');
-      submitButton.disabled = false;
-      submitButton.textContent = 'Payment';
-    }
-  });
-}
+    // Save information for the success page
+    localStorage.setItem('lastOrder', JSON.stringify({
+      orderId: result.orderId,
+      total: checkout.orderTotal.toFixed(2),
+      date: new Date().toLocaleDateString()
+    }));
+    
+    localStorage.removeItem('so-cart');
+    window.location.href = './success.html';
+    
+  } catch (error) {
+    alertMessage('Error processing your order. Please try again.', true);
+    button.disabled = false;
+    button.textContent = 'Payment';
+  }
+});

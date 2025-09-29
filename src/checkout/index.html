@@ -9,19 +9,15 @@
   </head>
 
   <body>
-    <header class="divider" id="main-header">
-      <!-- The header will be loaded dynamically. -->
-    </header>
+    <header class="divider" id="main-header"></header>
 
     <main class="divider">
       <h1>Finalize Order</h1>
       
       <div class="checkout-layout">
-        <!-- Payment form -->
         <section class="checkout-form">
           <h2>Payment Information</h2>
-          <form id="checkout-form" novalidate>
-            <!-- Personal information -->
+          <form id="checkout-form">
             <fieldset>
               <legend>Personal information</legend>
               <div class="form-group">
@@ -34,7 +30,6 @@
               </div>
             </fieldset>
 
-            <!-- Address -->
             <fieldset>
               <legend>Delivery Address</legend>
               <div class="form-group">
@@ -55,21 +50,20 @@
               </div>
             </fieldset>
 
-            <!-- Payment -->
             <fieldset>
               <legend>Payment Information</legend>
               <div class="form-group">
                 <label for="cardNumber">Credit Card Number *</label>
-                <input type="text" id="cardNumber" name="cardNumber" pattern="[0-9]{16}" required>
+                <input type="text" id="cardNumber" name="cardNumber" required>
               </div>
               <div class="form-row">
                 <div class="form-group">
                   <label for="expiration">Exp. Date *</label>
-                  <input type="text" id="expiration" name="expiration" placeholder="MM/AA" required>
+                  <input type="text" id="expiration" name="expiration" required placeholder="MM/YY">
                 </div>
                 <div class="form-group">
                   <label for="code">Security Code *</label>
-                  <input type="text" id="code" name="code" pattern="[0-9]{3}" required>
+                  <input type="text" id="code" name="code" required>
                 </div>
               </div>
             </fieldset>
@@ -78,34 +72,19 @@
           </form>
         </section>
 
-        <!-- Order summary -->
         <section class="order-summary">
           <h2>Order summary</h2>
           <div id="cart-items"></div>
           <div class="order-totals">
-            <div class="total-line">
-              <span>Subtotal:</span>
-              <span id="item-total">$0.00</span>
-            </div>
-            <div class="total-line">
-              <span>Taxes (6%):</span>
-              <span id="tax">$0.00</span>
-            </div>
-            <div class="total-line">
-              <span>Shipping Costs:</span>
-              <span id="shipping">$0.00</span>
-            </div>
-            <div class="total-line grand-total">
-              <span>Total:</span>
-              <span id="order-total">$0.00</span>
-            </div>
+            <div class="total-line"><span>Subtotal:</span><span id="item-total">$0.00</span></div>
+            <div class="total-line"><span>Taxes (6%):</span><span id="tax">$0.00</span></div>
+            <div class="total-line"><span>Shipping Costs:</span><span id="shipping">$0.00</span></div>
+            <div class="total-line grand-total"><span>Total:</span><span id="order-total">$0.00</span></div>
           </div>
         </section>
       </div>
     </main>
 
-    <footer id="main-footer">
-      <!-- The footer will be loaded dynamically. -->
-    </footer>
+    <footer id="main-footer"></footer>
   </body>
 </html>

@@ -1,4 +1,4 @@
-import { getParam, setLocalStorage, getLocalStorage } from "./utils.mjs";
+import { getParam, setLocalStorage, getLocalStorage, alertMessage } from "./utils.mjs";
 import ProductData from "./ProductData.mjs";
 
 export default class ProductDetails {
@@ -12,12 +12,10 @@ export default class ProductDetails {
   async init() {
     try {
       this.product = await this.dataSource.findProductById(this.productId);
-      
       if (!this.product) {
         this.showError("Product not found");
         return;
       }
-      
       this.renderProductDetails();
       this.addToCartListener();
     } catch (error) {
@@ -28,47 +26,36 @@ export default class ProductDetails {
 
   renderProductDetails() {
     const product = this.product;
-    
-    const imagePath = product.Images?.PrimaryLarge || 
-                     product.Images?.PrimaryMedium || 
-                     product.Images?.Primary ||
-                     "/images/placeholder.jpg";
+    const imagePath = product.Images?.PrimaryLarge || product.Images?.PrimaryMedium || product.Images?.Primary || "/images/placeholder.jpg";
     
     document.getElementById("product-brand").textContent = product.Brand?.Name || "";
     document.getElementById("product-name").textContent = product.Name;
     document.getElementById("product-price").textContent = `$${product.FinalPrice}`;
     document.getElementById("product-color").textContent = product.Colors?.[0]?.ColorName || "";
     document.getElementById("product-description").textContent = product.Description;
-
     document.getElementById("product-image").src = imagePath;
     document.getElementById("product-image").alt = product.Name;
-    
     document.title = `Sleep Outside | ${product.Name}`;
   }
 
   addToCartListener() {
     const addButton = document.getElementById("addToCart");
     if (addButton) {
-      // DELETE ALL OLD HEADPHONES
       const newButton = addButton.cloneNode(true);
       addButton.parentNode.replaceChild(newButton, addButton);
       
-      // ADD A SINGLE CLEAN EARPHONE
       newButton.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopImmediatePropagation();
         
-        // PREVENT DOUBLE CLICKS
         if (this.addButtonClicked) return;
         this.addButtonClicked = true;
         
-        // DISABLE THE BUTTON FOR 2 SECONDS
         newButton.disabled = true;
         newButton.textContent = "Adding...";
         
         this.addToCart();
         
-        // REACTIVATE AFTER 2 SECONDS
         setTimeout(() => {
           this.addButtonClicked = false;
           newButton.disabled = false;
@@ -80,10 +67,7 @@ export default class ProductDetails {
 
   addToCart() {
     let cart = getLocalStorage("so-cart") || [];
-    
-    const imagePath = this.product.Images?.PrimaryMedium || 
-                     this.product.Images?.Primary ||
-                     "/images/placeholder.jpg";
+    const imagePath = this.product.Images?.PrimaryMedium || this.product.Images?.Primary || "/images/placeholder.jpg";
 
     const productToAdd = {
       Id: this.product.Id,
@@ -104,8 +88,8 @@ export default class ProductDetails {
     
     setLocalStorage("so-cart", cart);
     
-    // SINGLE ALERT - no duplicate messages
-    alert(`${this.product.Name} has been added to your cart!`);
+    // UTILISATION DE LA NOUVELLE ALERTE
+    alertMessage(`${this.product.Name} has been added to your cart!`, false);
     
     const event = new CustomEvent('cartUpdated');
     document.dispatchEvent(event);
